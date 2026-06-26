@@ -13,6 +13,8 @@
 
 ![ReqVision AI Banner](https://placehold.co/1000x300/0f172a/38bdf8.png?text=ReqVision+AI+-+Requirement+Intelligence+Platform)
 
+**[🔴 Live Demo (Vercel)](https://reqvision-ai.vercel.app) &nbsp;&nbsp;|&nbsp;&nbsp; [⚙️ Backend API (Render)](https://reqvision-backend.onrender.com)**
+
 *Transform manual, tedious SRS document reviews into instant, deterministic AI analytics.*
 
 </div>

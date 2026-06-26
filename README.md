@@ -11,7 +11,7 @@
 [![Flask](https://img.shields.io/badge/Flask-000000?style=for-the-badge&logo=flask&logoColor=white)](https://flask.palletsprojects.com/)
 [![scikit-learn](https://img.shields.io/badge/scikit--learn-F7931E?style=for-the-badge&logo=scikit-learn&logoColor=white)](https://scikit-learn.org/)
 
-![ReqVision AI Banner](https://via.placeholder.com/1000x300/0f172a/38bdf8.png?text=ReqVision+AI+-+Requirement+Intelligence+Platform)
+![ReqVision AI Banner](https://placehold.co/1000x300/0f172a/38bdf8.png?text=ReqVision+AI+-+Requirement+Intelligence+Platform)
 
 *Transform manual, tedious SRS document reviews into instant, deterministic AI analytics.*
 

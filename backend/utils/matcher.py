@@ -54,18 +54,26 @@ def get_detected_changes(old_text, new_text):
         added, removed, common = [], [], []
     
     changes = []
+    
+    if added and removed:
+        reason = f"{added[0].capitalize()} capability introduced, replacing '{removed[0]}'."
+        changes.append(f"Summary: Scope modified by adding '{', '.join(added)}' while reducing emphasis on '{', '.join(removed)}'.")
+    elif added:
+        reason = f"{added[0].capitalize()} capability expanded."
+        changes.append(f"Summary: Scope expanded to include '{', '.join(added)}'.")
+    elif removed:
+        reason = f"{removed[0].capitalize()} capability reduced."
+        changes.append(f"Summary: Scope narrowed by removing '{', '.join(removed)}'.")
+    else:
+        reason = "Minor textual modifications."
+        changes.append("Summary: Phrasing updated without major semantic shifts.")
+
     if added:
         changes.append(f"+ Added keywords: {', '.join(added)}")
     if removed:
         changes.append(f"- Removed keywords: {', '.join(removed)}")
     if common:
         changes.append(f"✓ Retained concepts: {', '.join(common)}")
-        
-    reason = "Requirement text was altered."
-    if len(added) > len(removed):
-        reason = "Requirement scope expanded based on TF-IDF feature importance."
-    elif len(removed) > len(added):
-        reason = "Requirement scope reduced based on TF-IDF feature importance."
         
     return {
         "highlights": changes,

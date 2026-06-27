@@ -100,9 +100,20 @@ export default function DiffCard({ change, index }) {
             </div>
           )}
           {confidence && (
-            <span className={`text-xs font-bold px-3 py-1 rounded-full border shadow-sm ${getConfidenceColor(confidence)}`}>
-              {confidence} Confidence
-            </span>
+            <div className="relative group/conf inline-block">
+              <span className={`text-xs font-bold px-3 py-1 rounded-full border flex items-center gap-1.5 shadow-sm ${change.similarity_breakdown ? 'cursor-help' : ''} ${getConfidenceColor(confidence)}`}>
+                {confidence} Confidence
+              </span>
+              {change.similarity_breakdown && (
+                <div className="absolute top-full mt-2 left-0 w-56 p-3 bg-slate-800 text-slate-100 text-[10px] rounded-lg opacity-0 invisible group-hover/conf:opacity-100 group-hover/conf:visible transition-all z-20 shadow-xl border border-slate-700 text-left">
+                  <div className="font-bold mb-1 border-b border-slate-600 pb-1 text-slate-300 uppercase tracking-widest">Confidence Score Basis</div>
+                  <ul className="space-y-1.5 mt-2 font-medium">
+                    <li className="flex justify-between items-center"><span>Semantic Similarity</span> <span className="text-emerald-400">{Math.round(change.similarity_breakdown.semantic * 100)}%</span></li>
+                    <li className="flex justify-between items-center"><span>Keyword Overlap</span> <span className="text-emerald-400">{Math.round(change.similarity_breakdown.keyword * 100)}%</span></li>
+                  </ul>
+                </div>
+              )}
+            </div>
           )}
         </div>
         <div className="text-right hidden sm:block pl-4 relative group/sim">
@@ -127,7 +138,7 @@ export default function DiffCard({ change, index }) {
         <div className={`p-4 rounded-xl ${status === 'Added' ? 'bg-slate-50/50 opacity-50' : 'bg-red-50/30 border border-red-100'}`}>
           <div className="text-xs font-semibold text-slate-500 mb-1 uppercase tracking-wider">Baseline</div>
           <p className={`text-sm ${status === 'Added' ? 'text-slate-400 italic' : 'text-slate-700'}`}>
-            {oldText || "— No baseline requirement —"}
+            {oldText || "New capability introduced in Version 2.0. No corresponding requirement exists in the baseline document."}
           </p>
         </div>
 

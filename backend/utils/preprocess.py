@@ -33,7 +33,11 @@ def get_sentences(text):
                 match = re.match(r'^([A-Z]{2,4}-\d+)[^\w]*(.*)', chunk, re.DOTALL)
                 if match:
                     req_id = match.group(1)
-                    req_text = match.group(2).strip().replace('\n', ' ')
+                    req_text = match.group(2).strip()
+                    # Strip trailing section headers (e.g. "2. NON-FUNCTIONAL REQUIREMENTS" or "3. CONSTRAINTS")
+                    # and anything that follows them. Matches lines that are mostly ALL CAPS.
+                    req_text = re.split(r'\n\s*(?:\d+\.\s+)?[A-Z][A-Z0-9\s\-]{5,}(?:\n|$)', req_text)[0]
+                    req_text = req_text.replace('\n', ' ').strip()
                     reqs.append({"id": req_id, "text": req_text})
                 # If no match, it's metadata (e.g. "Project: ... 1. FUNCTIONAL REQS") before the first ID, so ignore it.
         return reqs

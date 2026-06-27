@@ -25,7 +25,12 @@ const AnimatedCounter = ({ value }) => {
     }
   }, [isInView, value]);
 
-  return <span ref={ref}>{value > 0 ? count : value}</span>;
+  return (
+    <span ref={ref}>
+      <span className="print:hidden">{value > 0 ? count : value}</span>
+      <span className="hidden print:inline">{value}</span>
+    </span>
+  );
 };
 
 export default function QualityDashboard({ quality_summary }) {

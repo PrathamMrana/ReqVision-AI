@@ -32,7 +32,12 @@ const AnimatedCounter = ({ value }) => {
     }
   }, [isInView, targetNumber]);
 
-  return <span ref={ref}>{prefix}{count}{suffix}</span>;
+  return (
+    <span ref={ref}>
+      <span className="print:hidden">{prefix}{count}{suffix}</span>
+      <span className="hidden print:inline">{prefix}{targetNumber}{suffix}</span>
+    </span>
+  );
 };
 
 export default function StatCard({ title, value, subtitle, icon, trendColor = "text-slate-500", delay = 0 }) {

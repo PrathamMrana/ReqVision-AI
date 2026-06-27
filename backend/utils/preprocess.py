@@ -22,15 +22,15 @@ def get_sentences(text):
     if not text or not text.strip():
         return []
     
-    # Try to split by explicit 'REQ-' tags if present
-    if 'REQ-' in text:
-        chunks = re.split(r'(?=REQ-\d+)', text)
+    # Try to split by explicit tags like REQ-001, FR-01, NFR-100
+    if re.search(r'[A-Z]{2,4}-\d+', text):
+        chunks = re.split(r'(?=[A-Z]{2,4}-\d+)', text)
         reqs = []
         for chunk in chunks:
             chunk = chunk.strip()
             if chunk:
                 # Extract ID
-                match = re.match(r'^(REQ-\d+)[^\w]*(.*)', chunk, re.DOTALL)
+                match = re.match(r'^([A-Z]{2,4}-\d+)[^\w]*(.*)', chunk, re.DOTALL)
                 if match:
                     req_id = match.group(1)
                     req_text = match.group(2).strip().replace('\n', ' ')

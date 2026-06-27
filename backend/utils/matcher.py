@@ -123,12 +123,12 @@ def match_sentences(baseline_dicts, updated_dicts, clean_baseline, clean_updated
     # If an item has no ID (None), assign a temporary unique ID for tracking
     base_map = {}
     for i, b in enumerate(baseline_dicts):
-        rid = b.get('id') or f"REQ-{(i+1):03d}"
+        rid = b.get('id') or f"AUTO-{(i+1):03d}"
         base_map[rid] = {"text": b['text'], "clean": clean_baseline[i]}
         
     updated_map = {}
     for j, u in enumerate(updated_dicts):
-        rid = u.get('id') or f"REQ-{(len(baseline_dicts) + j + 1):03d}"
+        rid = u.get('id') or f"AUTO-{(j+1):03d}"
         updated_map[rid] = {"text": u['text'], "clean": clean_updated[j]}
         
     all_ids = set(base_map.keys()).union(set(updated_map.keys()))

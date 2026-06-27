@@ -23,8 +23,8 @@ def get_sentences(text):
         return []
     
     # Try to split by explicit tags like REQ-001, FR-01, NFR-100
-    if re.search(r'[A-Z]{2,4}-\d+', text):
-        chunks = re.split(r'(?=[A-Z]{2,4}-\d+)', text)
+    if re.search(r'\b[A-Z]{2,4}-\d+', text):
+        chunks = re.split(r'(?=\b[A-Z]{2,4}-\d+)', text)
         reqs = []
         for chunk in chunks:
             chunk = chunk.strip()
@@ -35,9 +35,7 @@ def get_sentences(text):
                     req_id = match.group(1)
                     req_text = match.group(2).strip().replace('\n', ' ')
                     reqs.append({"id": req_id, "text": req_text})
-                else:
-                    # Fallback if no ID matched
-                    reqs.append({"id": None, "text": chunk.replace('\n', ' ')})
+                # If no match, it's metadata (e.g. "Project: ... 1. FUNCTIONAL REQS") before the first ID, so ignore it.
         return reqs
         
     # Fallback to double newline split (paragraphs)

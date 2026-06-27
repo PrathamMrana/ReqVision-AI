@@ -61,7 +61,7 @@ def generate_executive_summary(metrics, module_impact):
             risk_level = "High"
 
     # Assessment
-    assessment = f"The updated SRS demonstrates a {'significant' if risk_level == 'High' else 'moderate' if risk_level == 'Medium' else 'minor'} shift in requirements. Overall similarity remains at {avg_sim}% with a requirement stability of {metrics['stability_score']}%."
+    assessment = f"The updated SRS demonstrates a {'significant' if risk_level == 'High' else 'moderate' if risk_level == 'Medium' else 'minor'} shift in requirements. Overall similarity remains at {avg_sim}%, with {metrics['stability_score']}% of original requirements remaining completely unchanged."
 
     # Business Impact
     impacts = []

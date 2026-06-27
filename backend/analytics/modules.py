@@ -6,27 +6,36 @@ def detect_functional_area(text):
     
     modules = {
         "Authentication": ["login", "sign in", "sign up", "register", "password", "oauth", "sso", "authenticate", "mfa", "session"],
-        "Authorization": ["role", "permission", "access", "admin", "privilege", "rbac", "allow", "restrict", "authorize"],
+        "Authorization": ["role", "permission", "access", "admin", "privilege", "rbac", "authorize"],
         "Payment": ["payment", "stripe", "checkout", "credit card", "billing", "invoice", "refund", "transaction", "pay", "subscription"],
+        "Search & Catalog": ["search", "filter", "find", "sort", "lookup", "catalog", "category", "book", "item", "product"],
+        "Loan Management": ["borrow", "return", "loan", "due", "fine", "overdue", "issue", "renew", "checkout"],
         "Dashboard": ["dashboard", "home page", "overview", "landing", "panel", "home"],
         "Reporting": ["report", "export", "pdf", "csv", "summary", "excel", "download", "print"],
         "Notifications": ["email", "notification", "alert", "sms", "push", "message", "notify"],
         "Database": ["database", "schema", "table", "sql", "nosql", "query", "record", "store", "save", "data", "repository"],
         "API": ["api", "endpoint", "rest", "graphql", "webhook", "integration", "payload", "sync", "fetch"],
-        "Profile": ["profile", "avatar", "account", "settings", "preferences", "user", "customer", "client"],
+        "Profile": ["profile", "avatar", "account", "settings", "preferences", "customer", "client"],
         "Analytics": ["analytics", "metric", "track", "statistic", "graph", "chart", "monitor"],
         "Security": ["security", "encryption", "hash", "ssl", "tls", "vulnerability", "secure", "protect", "firewall", "audit"],
-        "Search": ["search", "filter", "find", "sort", "lookup"],
-        "Administration": ["admin", "manage", "configuration", "setup", "control panel"],
         "Performance": ["performance", "speed", "latency", "throughput", "response time", "load", "concurrent", "scalable", "fast", "cache", "optimize", "ms", "seconds"],
-        "Inventory": ["inventory", "stock", "item", "product", "warehouse", "sku", "catalog", "category"],
         "UI/UX": ["ui", "ux", "interface", "button", "click", "screen", "display", "view", "frontend", "layout", "responsive", "mobile"]
     }
     
+    import re
+    scores = {m: 0 for m in modules}
+    
     for module, keywords in modules.items():
-        if any(keyword in text_lower for keyword in keywords):
-            return module
+        for keyword in keywords:
+            matches = len(re.findall(r'\b' + re.escape(keyword) + r'\b', text_lower))
+            # Give slightly higher weight to multi-word keywords
+            weight = 2 if " " in keyword else 1
+            scores[module] += (matches * weight)
             
+    best_module = max(scores, key=scores.get)
+    if scores[best_module] > 0:
+        return best_module
+        
     return "Other"
 
 def get_module_impact(changes):

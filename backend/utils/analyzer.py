@@ -184,3 +184,87 @@ def generate_recommendations(status, module):
     }
     
     return rules.get(module, default)
+
+def generate_engineering_impact(change):
+    status = change.get('status')
+    if status in ['Unchanged', 'N/A']:
+        return None
+        
+    module = change.get('module', 'Other')
+    complexity = change.get('complexity', 'Low')
+    new_text = (change.get('new') or change.get('old') or '').lower()
+    
+    # Calculate Fibonacci Story Points (1, 2, 3, 5, 8, 13)
+    points = 3
+    if complexity == 'High':
+        points = 8 if status == 'Modified' else 13
+    elif complexity == 'Medium':
+        points = 5 if status == 'Modified' else 8
+    else:
+        points = 2 if status == 'Modified' else 3
+        
+    if len(new_text.split()) > 25 and points < 13:
+        points = 8 if points == 5 else 13 if points == 8 else points
+        
+    # Estimate Sprint Effort
+    effort_map = {
+        1: "< 1 day",
+        2: "1–2 days",
+        3: "2–3 days",
+        5: "3–5 days (1 Sprint)",
+        8: "1–2 Sprints",
+        13: "2+ Sprints (Major Epic)"
+    }
+    sprint_effort = effort_map.get(points, "3–5 days")
+    
+    # Backward Compatibility & Breaking Changes
+    breaking_keywords = ['remove', 'delete', 'replace', 'migrate', 'schema', 'breaking', 'deprecated', 'oauth', 'token', 'drop', 'alter', 'rename']
+    is_breaking = any(kw in new_text for kw in breaking_keywords) or status == 'Removed'
+    backward_compatible = not is_breaking
+    
+    # Architecture Impact Stars (out of 5)
+    stars = {
+        "Frontend": 2,
+        "Backend": 3,
+        "Database": 1,
+        "API": 2,
+        "Testing": 3
+    }
+    
+    if module in ['UI/UX', 'Dashboard', 'Profile']:
+        stars['Frontend'] = 5
+        stars['Backend'] = 2
+    elif module in ['Authentication', 'Authorization', 'Security']:
+        stars['Frontend'] = 4
+        stars['Backend'] = 5
+        stars['API'] = 5
+        stars['Testing'] = 5
+    elif module in ['Database', 'Loan Management', 'Inventory']:
+        stars['Database'] = 5
+        stars['Backend'] = 5
+        stars['API'] = 3
+    elif module in ['API', 'Payment', 'Search & Catalog']:
+        stars['API'] = 5
+        stars['Backend'] = 5
+        stars['Frontend'] = 3
+        stars['Testing'] = 5
+        
+    if is_breaking:
+        stars['Testing'] = 5
+        stars['Backend'] = max(stars['Backend'], 4)
+        
+    # Dependency Chain
+    rec = generate_recommendations(status, module)
+    components = rec.get('components', ['Core Layer', "Service Module"]) if rec else ['Core Layer']
+    tests = rec.get('tests', ['Regression Tests']) if rec else ['Regression Tests']
+    
+    chain = list(components) + [tests[0] if tests else "E2E Tests"]
+    
+    return {
+        "story_points": points,
+        "sprint_effort": sprint_effort,
+        "backward_compatible": backward_compatible,
+        "stars": stars,
+        "dependency_chain": chain,
+        "is_breaking": is_breaking
+    }

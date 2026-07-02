@@ -3,7 +3,7 @@ from flask import Blueprint, request, jsonify
 from utils.preprocess import get_sentences, clean_text
 from utils.similarity import calculate_similarity_matrix
 from utils.matcher import match_sentences
-from utils.analyzer import generate_recommendations
+from utils.analyzer import generate_recommendations, generate_engineering_impact
 from analytics.modules import get_module_impact
 from analytics.risk import calculate_metrics, generate_executive_summary
 
@@ -54,6 +54,7 @@ def compare_requirements():
         status = change['status']
         rec = generate_recommendations(status, module)
         change['recommendations'] = rec
+        change['engineering_impact'] = generate_engineering_impact(change)
         
         if rec:
             impacted_modules.add(module)

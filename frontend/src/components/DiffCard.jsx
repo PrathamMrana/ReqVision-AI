@@ -1,8 +1,8 @@
 import { motion } from 'framer-motion';
-import { CheckCircle2, AlertCircle, PlusCircle, XCircle, ArrowRight, Lightbulb, Award, Zap, AlertTriangle, MessageSquareWarning } from 'lucide-react';
+import { CheckCircle2, AlertCircle, PlusCircle, XCircle, ArrowRight, Lightbulb, Award, Zap, AlertTriangle, MessageSquareWarning, Layers, Clock, GitBranch } from 'lucide-react';
 
 export default function DiffCard({ change, index }) {
-  const { req_id, old: oldText, new: newText, status, similarity, module, risk, confidence, quality, priority, complexity, recommendations, detected_changes } = change;
+  const { req_id, old: oldText, new: newText, status, similarity, module, risk, confidence, quality, priority, complexity, recommendations, detected_changes, engineering_impact } = change;
 
   const getStatusConfig = () => {
     switch (status) {
@@ -167,7 +167,7 @@ export default function DiffCard({ change, index }) {
         </div>
       )}
       
-      <div className="grid md:grid-cols-2 gap-4">
+      <div className="grid md:grid-cols-2 gap-4 mb-4">
         {/* Detected Changes */}
         {status === 'Modified' && detected_changes && (
           <div className="bg-slate-50 rounded-xl p-4 border border-slate-200">
@@ -191,7 +191,7 @@ export default function DiffCard({ change, index }) {
         {recommendations && status !== 'Removed' && (
           <div className="bg-indigo-50/30 rounded-xl p-4 border border-indigo-100">
             <h4 className="text-sm font-semibold text-indigo-900 mb-2 flex items-center gap-2">
-              <AlertTriangle className="w-4 h-4 text-indigo-500" /> AI Recommendations
+              <AlertTriangle className="w-4 h-4 text-indigo-500" /> Engineering Recommendations
             </h4>
             <p className="text-xs text-indigo-800 mb-2 font-medium">{recommendations.review}</p>
             <div className="flex gap-2 mb-1">
@@ -205,6 +205,57 @@ export default function DiffCard({ change, index }) {
           </div>
         )}
       </div>
+
+      {/* Engineering Impact & Architecture Analysis */}
+      {engineering_impact && (
+        <div className="mt-4 bg-slate-900 text-slate-100 rounded-xl p-5 border border-slate-800 shadow-lg">
+          <div className="flex flex-wrap items-center justify-between gap-3 mb-4 pb-3 border-b border-slate-800">
+            <h4 className="text-sm font-bold flex items-center gap-2 text-primary-400">
+              <Layers className="w-4 h-4 text-primary-400" /> Engineering Impact & Architecture Analysis
+            </h4>
+            <div className="flex flex-wrap items-center gap-2">
+              <span className="text-xs font-mono font-bold bg-slate-800 text-primary-300 px-3 py-1 rounded-lg border border-slate-700 flex items-center gap-1.5 shadow-sm">
+                <Clock className="w-3.5 h-3.5 text-amber-400" /> {engineering_impact.story_points} Story Points
+              </span>
+              <span className="text-xs font-semibold bg-slate-800 text-slate-300 px-3 py-1 rounded-lg border border-slate-700 shadow-sm">
+                Est: {engineering_impact.sprint_effort}
+              </span>
+              <span className={`text-xs font-bold px-3 py-1 rounded-lg border flex items-center gap-1 shadow-sm ${engineering_impact.backward_compatible ? 'bg-emerald-950/80 text-emerald-300 border-emerald-800' : 'bg-red-950/80 text-red-300 border-red-800'}`}>
+                {engineering_impact.backward_compatible ? '✓ Backward Compatible' : '⚠️ Breaking Change'}
+              </span>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-2 sm:grid-cols-5 gap-3 mb-4">
+            {Object.entries(engineering_impact.stars).map(([layer, count]) => (
+              <div key={layer} className="bg-slate-800/60 p-2.5 rounded-lg border border-slate-700/60 text-center">
+                <div className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">{layer}</div>
+                <div className="flex justify-center text-amber-400 text-xs tracking-tighter">
+                  {"★".repeat(count)}{"☆".repeat(5 - count)}
+                </div>
+              </div>
+            ))}
+          </div>
+
+          <div className="bg-slate-950/60 rounded-lg p-3 border border-slate-800/80">
+            <div className="text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-2 flex items-center gap-1.5">
+              <GitBranch className="w-3.5 h-3.5 text-indigo-400" /> Architecture Dependency Graph
+            </div>
+            <div className="flex flex-wrap items-center gap-1.5 text-xs text-slate-200 font-mono">
+              {engineering_impact.dependency_chain.map((comp, i) => (
+                <span key={i} className="flex items-center gap-1.5">
+                  <span className="bg-indigo-950/80 text-indigo-300 border border-indigo-800/80 px-2 py-0.5 rounded shadow-sm">
+                    {comp}
+                  </span>
+                  {i < engineering_impact.dependency_chain.length - 1 && (
+                    <span className="text-slate-500 font-bold">→</span>
+                  )}
+                </span>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
     </motion.div>
   );
 }

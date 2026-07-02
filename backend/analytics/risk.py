@@ -84,10 +84,25 @@ def generate_executive_summary(metrics, module_impact):
         rec = "Review recommended for newly added and modified components to ensure alignment with project capacity."
     else:
         rec = "Changes are within acceptable variance. Proceed with standard sprint planning."
-        
+    # Top Risks
+    top_risks = []
+    if counts["Removed"] > 0:
+        top_risks.append(f"{counts['Removed']} requirement(s) removed from baseline")
+    if counts["Added"] > 0:
+        top_risks.append(f"{counts['Added']} new capability(s) introduced into scope")
+    if scope_creep > 0:
+        top_risks.append(f"{scope_creep}% overall scope increase detected")
+    if high_risk_modules:
+        top_risks.append(f"High architectural risk in: {', '.join(high_risk_modules[:3])}")
+    if counts["Modified"] > 3:
+        top_risks.append(f"Significant revision volatility ({counts['Modified']} modified requirements)")
+    if not top_risks:
+        top_risks.append("Minimal scope creep and low architectural risk detected")
+
     return {
         "overall_risk": risk_level,
         "assessment": assessment,
         "business_impact": impacts,
-        "recommendation": rec
+        "recommendation": rec,
+        "top_risks": top_risks
     }

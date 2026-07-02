@@ -102,7 +102,7 @@ export default function DiffCard({ change, index }) {
           {confidence && (
             <div className="relative group/conf inline-block">
               <span className={`text-xs font-bold px-3 py-1 rounded-full border flex items-center gap-1.5 shadow-sm ${change.similarity_breakdown ? 'cursor-help' : ''} ${getConfidenceColor(confidence)}`}>
-                {confidence} Confidence
+                {confidence} Match Confidence
               </span>
               {change.similarity_breakdown && (
                 <div className="absolute top-full mt-2 left-0 w-56 p-3 bg-slate-800 text-slate-100 text-[10px] rounded-lg opacity-0 invisible group-hover/conf:opacity-100 group-hover/conf:visible transition-all z-20 shadow-xl border border-slate-700 text-left">
@@ -120,16 +120,17 @@ export default function DiffCard({ change, index }) {
           <div className="text-xs text-slate-400 font-bold uppercase tracking-widest mb-1.5">Similarity</div>
           <div className="cursor-help inline-block">{getSimilarityBadge(similarity)}</div>
           
-          {change.similarity_breakdown && (
-            <div className="absolute right-0 top-full mt-2 w-48 p-3 bg-white text-slate-600 text-[10px] rounded-lg opacity-0 invisible group-hover/sim:opacity-100 group-hover/sim:visible transition-all z-20 shadow-xl border border-slate-200 text-left">
-              <div className="font-bold mb-1 border-b border-slate-100 pb-1 text-slate-800 uppercase tracking-widest">Similarity Breakdown</div>
-              <ul className="space-y-1.5 mt-2 font-medium">
-                <li className="flex justify-between items-center"><span>Semantic Match</span> <span className="font-bold text-primary-600">{Math.round(change.similarity_breakdown.semantic * 100)}%</span></li>
-                <li className="flex justify-between items-center"><span>Keyword Match</span> <span className="font-bold text-primary-600">{Math.round(change.similarity_breakdown.keyword * 100)}%</span></li>
-                <li className="flex justify-between items-center border-t border-slate-50 pt-1 mt-1"><span>Overall Match</span> <span className="font-extrabold text-slate-900">{Math.round(change.similarity_breakdown.overall * 100)}%</span></li>
+          <div className="absolute right-0 top-full mt-2 w-56 p-3 bg-slate-800 text-slate-100 text-[10px] rounded-lg opacity-0 invisible group-hover/sim:opacity-100 group-hover/sim:visible transition-all z-20 shadow-xl border border-slate-700 text-left font-normal">
+            <div className="font-bold mb-1 border-b border-slate-600 pb-1 text-slate-300 uppercase tracking-widest">Similarity Basis</div>
+            <p className="text-slate-300 mb-2 italic">Calculated using TF-IDF cosine similarity & Jaccard token overlap.</p>
+            {change.similarity_breakdown && (
+              <ul className="space-y-1.5 mt-2 font-medium border-t border-slate-700 pt-2">
+                <li className="flex justify-between items-center"><span>Semantic Match</span> <span className="font-bold text-primary-400">{Math.round(change.similarity_breakdown.semantic * 100)}%</span></li>
+                <li className="flex justify-between items-center"><span>Keyword Match</span> <span className="font-bold text-primary-400">{Math.round(change.similarity_breakdown.keyword * 100)}%</span></li>
+                <li className="flex justify-between items-center border-t border-slate-700 pt-1 mt-1"><span>Overall Match</span> <span className="font-extrabold text-amber-400">{Math.round(change.similarity_breakdown.overall * 100)}%</span></li>
               </ul>
-            </div>
-          )}
+            )}
+          </div>
         </div>
       </div>
 

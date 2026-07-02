@@ -94,7 +94,8 @@ def compare_requirements():
     executive_summary["comparison_date"] = datetime.now().strftime("%Y-%m-%d %H:%M")
     executive_summary["baseline_version"] = "v1.0"
     executive_summary["updated_version"] = "v2.0"
-    executive_summary["ai_confidence"] = "High (TF-IDF Semantics)"
+    executive_summary["analysis_confidence"] = "High (Lexical & Semantic Match)"
+    executive_summary["ai_confidence"] = "High (Lexical & Semantic Match)"
     
     execution_time = time.time() - start_time
     

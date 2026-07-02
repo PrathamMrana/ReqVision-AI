@@ -222,7 +222,7 @@ def generate_engineering_impact(change):
     is_breaking = any(kw in new_text for kw in breaking_keywords) or status == 'Removed'
     backward_compatible = not is_breaking
     
-    # Architecture Impact Stars (out of 5)
+    # Dynamic Keyword-Driven Architecture Impact Stars (out of 5)
     stars = {
         "Frontend": 2,
         "Backend": 3,
@@ -231,34 +231,74 @@ def generate_engineering_impact(change):
         "Testing": 3
     }
     
-    if module in ['UI/UX', 'Dashboard', 'Profile']:
-        stars['Frontend'] = 5
-        stars['Backend'] = 2
-    elif module in ['Authentication', 'Authorization', 'Security']:
-        stars['Frontend'] = 4
-        stars['Backend'] = 5
+    # Check keyword rules first for true data-driven stars
+    if any(kw in new_text for kw in ['oauth', 'sso', 'jwt', 'token', 'auth', 'login', 'security']):
         stars['API'] = 5
+        stars['Backend'] = 5
+        stars['Testing'] = 4
+        stars['Frontend'] = 2
+    elif any(kw in new_text for kw in ['payment', 'stripe', 'checkout', 'billing', 'invoice', 'transaction']):
+        stars['API'] = 5
+        stars['Backend'] = 5
         stars['Testing'] = 5
-    elif module in ['Database', 'Loan Management', 'Inventory']:
+        stars['Database'] = 4
+        stars['Frontend'] = 3
+    elif any(kw in new_text for kw in ['database', 'schema', 'table', 'sql', 'migration', 'index', 'query']):
         stars['Database'] = 5
         stars['Backend'] = 5
         stars['API'] = 3
-    elif module in ['API', 'Payment', 'Search & Catalog']:
-        stars['API'] = 5
-        stars['Backend'] = 5
-        stars['Frontend'] = 3
-        stars['Testing'] = 5
-        
+        stars['Testing'] = 4
+        stars['Frontend'] = 1
+    elif any(kw in new_text for kw in ['ui', 'button', 'screen', 'view', 'layout', 'dashboard', 'theme', 'mobile']):
+        stars['Frontend'] = 5
+        stars['Backend'] = 2
+        stars['API'] = 2
+        stars['Testing'] = 3
+    elif any(kw in new_text for kw in ['report', 'export', 'pdf', 'csv', 'chart', 'analytics']):
+        stars['Backend'] = 4
+        stars['Database'] = 3
+        stars['Frontend'] = 4
+        stars['Testing'] = 3
+    else:
+        # Fallback to module heuristics
+        if module in ['UI/UX', 'Dashboard', 'Profile']:
+            stars['Frontend'] = 5
+            stars['Backend'] = 2
+        elif module in ['Authentication', 'Authorization', 'Security']:
+            stars['Frontend'] = 4
+            stars['Backend'] = 5
+            stars['API'] = 5
+            stars['Testing'] = 5
+        elif module in ['Database', 'Loan Management', 'Inventory']:
+            stars['Database'] = 5
+            stars['Backend'] = 5
+            stars['API'] = 3
+        elif module in ['API', 'Payment', 'Search & Catalog']:
+            stars['API'] = 5
+            stars['Backend'] = 5
+            stars['Frontend'] = 3
+            stars['Testing'] = 5
+            
     if is_breaking:
         stars['Testing'] = 5
         stars['Backend'] = max(stars['Backend'], 4)
         
-    # Dependency Chain
-    rec = generate_recommendations(status, module)
-    components = rec.get('components', ['Core Layer', "Service Module"]) if rec else ['Core Layer']
-    tests = rec.get('tests', ['Regression Tests']) if rec else ['Regression Tests']
-    
-    chain = list(components) + [tests[0] if tests else "E2E Tests"]
+    # Richer Dependency Chain Story
+    if any(kw in new_text for kw in ['payment', 'stripe', 'checkout', 'billing', 'invoice', 'transaction']) or module == 'Payments':
+        chain = ["Payment Module", "Payment API", "Transaction Service", "Billing Database", "Integration Tests"]
+    elif any(kw in new_text for kw in ['oauth', 'sso', 'jwt', 'token', 'auth', 'login']) or module in ['Authentication', 'Authorization']:
+        chain = ["Auth Module", "OAuth Gateway", "Session Middleware", "User Identity DB", "Security Penetration Tests"]
+    elif any(kw in new_text for kw in ['database', 'schema', 'table', 'sql', 'migration']) or module == 'Database':
+        chain = ["Data Access Layer", "ORM Models", "Schema Migration Script", "Core Database", "Data Migration Tests"]
+    elif any(kw in new_text for kw in ['search', 'filter', 'sort', 'catalog']) or module == 'Search & Catalog':
+        chain = ["Search Module", "Search API Indexer", "Catalog Service", "Read Replica DB", "Load Tests"]
+    elif any(kw in new_text for kw in ['report', 'export', 'pdf', 'csv']) or module == 'Reporting':
+        chain = ["Reporting UI", "Report Generator Service", "Async Job Queue", "Data Warehouse", "Export Validation Tests"]
+    else:
+        rec = generate_recommendations(status, module)
+        components = rec.get('components', ['Core Layer', "Service Module"]) if rec else ['Core Layer']
+        tests = rec.get('tests', ['Regression Tests']) if rec else ['Regression Tests']
+        chain = list(components) + [tests[0] if tests else "E2E Tests"]
     
     return {
         "story_points": points,

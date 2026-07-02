@@ -122,7 +122,7 @@ export default function Dashboard() {
             <span className="flex items-center gap-1.5"><Clock className="w-4 h-4 text-slate-400" /> Date: {executive_summary.comparison_date || 'N/A'}</span>
             <span className="flex items-center gap-1.5"><FileText className="w-4 h-4 text-slate-400" /> Baseline: {executive_summary.baseline_version || 'v1.0'}</span>
             <span className="flex items-center gap-1.5"><FileText className="w-4 h-4 text-slate-400" /> Updated: {executive_summary.updated_version || 'v2.0'}</span>
-            <span className="flex items-center gap-1.5"><ShieldAlert className="w-4 h-4 text-emerald-500" /> AI Confidence: {executive_summary.ai_confidence || 'High'}</span>
+            <span className="flex items-center gap-1.5"><ShieldAlert className="w-4 h-4 text-emerald-500" /> Analysis Confidence: {executive_summary.analysis_confidence || executive_summary.ai_confidence || 'High'}</span>
           </div>
           
           <div className="grid md:grid-cols-2 gap-8">
@@ -137,7 +137,7 @@ export default function Dashboard() {
             </div>
             <div>
               <h3 className="text-sm font-semibold text-slate-500 uppercase tracking-wider mb-2">Business Impact</h3>
-              <ul className="space-y-3">
+              <ul className="space-y-3 mb-6">
                 {executive_summary.business_impact.map((impact, i) => (
                   <li key={i} className="flex items-start gap-3 text-slate-700">
                     <CheckCircle2 className="w-5 h-5 text-primary-500 shrink-0 mt-0.5" />
@@ -145,6 +145,22 @@ export default function Dashboard() {
                   </li>
                 ))}
               </ul>
+
+              {executive_summary.top_risks && (
+                <>
+                  <h3 className="text-sm font-semibold text-red-600 uppercase tracking-wider mb-2 flex items-center gap-1.5">
+                    <AlertTriangle className="w-4 h-4 text-red-500" /> Top Risks
+                  </h3>
+                  <ul className="space-y-2.5 bg-red-50/60 p-4 rounded-xl border border-red-200">
+                    {executive_summary.top_risks.map((risk, i) => (
+                      <li key={i} className="flex items-start gap-2.5 text-xs font-bold text-red-900">
+                        <span className="text-red-500 font-extrabold">•</span>
+                        <span>{risk}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </>
+              )}
             </div>
           </div>
         </div>
@@ -154,7 +170,7 @@ export default function Dashboard() {
           <StatCard title="Total Requirements" value={changes.length} subtitle={`From ${metrics.total_baseline} original`} icon={<FileText />} trendColor="text-primary-500" delay={0.1} />
           <StatCard title="Scope Creep Index" value={`${metrics.scope_creep_index}%`} subtitle="Based on added reqs" icon={<Activity />} trendColor={metrics.scope_creep_index > 10 ? "text-red-500" : "text-emerald-500"} delay={0.2} />
           <StatCard title="Volatility Score" value={`${metrics.volatility_score}%`} subtitle="Modifications & Additions" icon={<AlertTriangle />} trendColor={metrics.volatility_score > 20 ? "text-amber-500" : "text-emerald-500"} delay={0.3} />
-          <StatCard title="Avg. Similarity" value={`${metrics.average_similarity}%`} subtitle="For matched items" icon={<Zap />} trendColor="text-primary-500" delay={0.4} />
+          <StatCard title="Avg. Similarity" value={`${metrics.average_similarity}%`} subtitle="TF-IDF cosine similarity" icon={<Zap />} trendColor="text-primary-500" delay={0.4} />
         </div>
 
         {/* Quality Dashboard */}
